@@ -100,4 +100,586 @@
       </div>
 
       <!-- Actions Grid -->
-      <div class="grid grid-cols-1 md:grid
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 1-Way Conversion Form -->
+        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-base text-slate-900 flex items-center gap-1.5">
+              <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
+              コイン変換申請
+            </h3>
+            <span class="text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">一方向限定</span>
+          </div>
+
+          <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 mb-4 text-xs">
+            <div class="flex items-center justify-between font-bold text-slate-800">
+              <span>✨ プレミアム (PRC)</span>
+              <span class="text-rose-600">➔</span>
+              <span>🪙 リアコイン (RC)</span>
+            </div>
+            <div class="mt-1.5 pt-1.5 border-t border-rose-200/60 text-[11px] text-slate-500 flex items-center gap-1">
+              <span>🔒</span>
+              <span>※リアコインからプレミアムリアコインへの逆変換はできません</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-bold text-slate-600 block mb-1">変換するプレミアムリアコイン数 (PRC)</label>
+              <input id="conv-amount" type="number" min="1" placeholder="例: 1" oninput="updateConvPreview()" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+            </div>
+            <div class="bg-slate-50 rounded-xl p-3 flex justify-between items-center text-xs">
+              <span class="text-slate-500 font-medium">変換後の受取予定:</span>
+              <span id="conv-preview" class="font-black text-rose-600 text-sm">+ 0 RC</span>
+            </div>
+            <button onclick="submitConversion()" class="w-full crimson-gradient text-white font-bold py-2.5 rounded-xl text-sm shadow-sm hover:opacity-95 transition">変換を申請する</button>
+          </div>
+        </div>
+
+        <!-- Gain / Use Application Form -->
+        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+          <h3 class="font-bold text-base text-slate-900 flex items-center gap-1.5 mb-3">
+            <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
+            増額・利用（特典交換）申請
+          </h3>
+
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button id="type-add" onclick="setReqType('add')" class="py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white">＋ 増額（獲得）申請</button>
+            <button id="type-use" onclick="setReqType('use')" class="py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600">－ 利用（交換）申請</button>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="mb-3">
+            <span class="text-[11px] font-bold text-slate-400 block mb-1">クイック入力プリセット:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="applyPreset('add','RC',100,'配信視聴ボーナス')" class="text-[11px] bg-rose-50 hover:bg-rose-100 text-rose-700 px-2 py-1 rounded-lg border border-rose-200 font-medium">+100RC 視聴</button>
+              <button onclick="applyPreset('add','PRC',1,'企画・ガチャ獲得')" class="text-[11px] bg-rose-50 hover:bg-rose-100 text-rose-700 px-2 py-1 rounded-lg border border-rose-200 font-medium">+1PRC 企画獲得</button>
+              <button onclick="applyPreset('use','RC',300,'アイコンリング交換')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-medium">-300RC リング</button>
+              <button onclick="applyPreset('use','RC',500,'リクエスト歌唱')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-medium">-500RC 歌唱</button>
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs font-bold text-slate-600 block mb-1">通貨種別</label>
+                <select id="req-coin" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-sm bg-white">
+                  <option value="RC">リアコイン (RC)</option>
+                  <option value="PRC">プレミアム (PRC)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-slate-600 block mb-1">数量</label>
+                <input id="req-amount" type="number" min="1" placeholder="100" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600 block mb-1">理由・特典メモ</label>
+              <input id="req-note" type="text" placeholder="例: バッジ特典、ボイス交換など" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+            </div>
+            <button onclick="submitRequest()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">ライバーへ申請を送る</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listener Pending & Bankbook History -->
+      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+        <h3 class="font-bold text-base text-slate-900 mb-3 flex items-center gap-1.5">
+          <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
+          あなたの申請状況・通帳履歴
+        </h3>
+        <div id="listener-history" class="space-y-2 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN (STREAMER) VIEW -->
+    <div id="view-admin" class="hidden space-y-6">
+      <div class="bg-rose-600 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+        <div>
+          <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full">STREAMER ADMIN MODE</span>
+          <h2 class="text-lg font-black mt-1">ライバー認可・銀行管理コンソール</h2>
+        </div>
+        <button onclick="lockAdmin()" class="bg-white text-rose-600 font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm hover:bg-rose-50">🔒 ロックしてリスナー画面へ戻る</button>
+      </div>
+
+      <!-- Pending Approvals -->
+      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h3 class="font-bold text-base text-slate-900">未承認の申請キュー</h3>
+          <button onclick="approveAll()" class="text-xs crimson-gradient text-white font-bold px-3.5 py-2 rounded-xl shadow-sm">✓ すべて一括認可して残高反映</button>
+        </div>
+        <div id="admin-pending-list" class="space-y-2.5"></div>
+      </div>
+
+      <!-- Direct Balance Adjust & Settings -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm space-y-3">
+          <h3 class="font-bold text-base text-slate-900">ライバー直接残高操作（即時反映）</h3>
+          <div>
+            <label class="text-xs font-bold text-slate-600 block mb-1">対象リスナー</label>
+            <select id="direct-listener" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="direct-coin" class="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+              <option value="RC">リアコイン (RC)</option>
+              <option value="PRC">プレミアム (PRC)</option>
+            </select>
+            <input id="direct-amount" type="number" placeholder="数量 (例: 100)" class="border border-slate-200 rounded-xl px-3 py-2 text-sm">
+          </div>
+          <input id="direct-note" type="text" placeholder="理由 (例: イベント応援お礼)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="directModify('add')" class="crimson-gradient text-white font-bold py-2 rounded-xl text-xs">＋ 付与する</button>
+            <button onclick="directModify('use')" class="bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">－ 減算する</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm space-y-4">
+          <h3 class="font-bold text-base text-slate-900">レート＆セキュリティ設定</h3>
+          <div>
+            <label class="text-xs font-bold text-slate-600 block mb-1">プレミアム1枚あたりのリアコイン変換数</label>
+            <div class="flex gap-2">
+              <input id="setting-rate" type="number" min="1" class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm">
+              <button onclick="saveRate()" class="bg-rose-600 text-white font-bold px-4 rounded-xl text-xs">保存</button>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-slate-100">
+            <label class="text-xs font-bold text-slate-600 block mb-1">ライバー管理パスワード変更（現在値で保護中）</label>
+            <div class="flex gap-2">
+              <input id="setting-pass" type="password" placeholder="新しい暗証番号・パスワード" class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm">
+              <button onclick="savePassword()" class="bg-slate-900 text-white font-bold px-4 rounded-xl text-xs">変更</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Listeners Balances -->
+      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+        <h3 class="font-bold text-base text-slate-900 mb-3">全リスナー残高一覧</h3>
+        <div id="admin-listeners-table" class="divide-y divide-slate-100 text-sm"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Password Modal -->
+  <div id="modal-pass" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 border border-rose-100 shadow-xl">
+      <h3 class="font-black text-lg text-slate-900">🔒 ライバー認証</h3>
+      <p class="text-xs text-slate-500 mt-1">管理画面に入るにはパスワードを入力してください（初期値: 0000）</p>
+      <input id="input-pass" type="password" placeholder="パスワードを入力" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm mt-4 focus:outline-none focus:ring-2 focus:ring-rose-500">
+      <p id="pass-error" class="hidden text-xs text-rose-600 font-bold mt-2">パスワードが違います</p>
+      <div class="flex justify-end gap-2 mt-5">
+        <button onclick="closePassModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">キャンセル</button>
+        <button onclick="verifyPass()" class="crimson-gradient text-white px-5 py-2 rounded-xl text-xs font-bold">ロック解除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Listener Modal -->
+  <div id="modal-listener" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 border border-rose-100 shadow-xl">
+      <h3 class="font-black text-lg text-slate-900">＋ 新規リスナー口座作成</h3>
+      <input id="new-listener-name" type="text" placeholder="リスナー名を入力" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm mt-4">
+      <div class="flex justify-end gap-2 mt-5">
+        <button onclick="closeAddListenerModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">キャンセル</button>
+        <button onclick="addListener()" class="crimson-gradient text-white px-5 py-2 rounded-xl text-xs font-bold">追加する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'riabank_v1_state';
+    let currentReqType = 'add';
+    let adminUnlocked = false;
+
+    const defaultState = {
+      rate: 100,
+      adminPass: '0000',
+      activeListenerId: 'u1',
+      listeners: [
+        { id: 'u1', name: 'サンプルリスナーA', rc: 500, prc: 3 },
+        { id: 'u2', name: 'サンプルリスナーB', rc: 120, prc: 1 }
+      ],
+      requests: [
+        { id: 'r1', listenerId: 'u1', type: 'add', coin: 'RC', amount: 100, note: '配信視聴ボーナス', status: 'pending', createdAt: '2026-11-19 02:00' }
+      ]
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultState));
+      } catch (e) {
+        return JSON.parse(JSON.stringify(defaultState));
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderAll();
+    }
+
+    function nowStr() {
+      const d = new Date();
+      return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+
+    function getActiveListener() {
+      return state.listeners.find(l => l.id === state.activeListenerId) || state.listeners[0];
+    }
+
+    function changeActiveListener(id) {
+      state.activeListenerId = id;
+      saveState();
+    }
+
+    function setReqType(type) {
+      currentReqType = type;
+      const btnAdd = document.getElementById('type-add');
+      const btnUse = document.getElementById('type-use');
+      if (type === 'add') {
+        btnAdd.className = 'py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white';
+        btnUse.className = 'py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600';
+      } else {
+        btnUse.className = 'py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white';
+        btnAdd.className = 'py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600';
+      }
+    }
+
+    function applyPreset(type, coin, amount, note) {
+      setReqType(type);
+      document.getElementById('req-coin').value = coin;
+      document.getElementById('req-amount').value = amount;
+      document.getElementById('req-note').value = note;
+    }
+
+    function updateConvPreview() {
+      const val = parseInt(document.getElementById('conv-amount').value || '0', 10);
+      const rc = val > 0 ? val * state.rate : 0;
+      document.getElementById('conv-preview').textContent = `+ ${rc.toLocaleString()} RC`;
+    }
+
+    function submitConversion() {
+      const user = getActiveListener();
+      const amount = parseInt(document.getElementById('conv-amount').value || '0', 10);
+      if (!amount || amount <= 0) return alert('変換するプレミアムリアコイン数を入力してください');
+      if (user.prc < amount) return alert('プレミアムリアコイン残高が不足しています');
+
+      state.requests.unshift({
+        id: 'req_' + Date.now(),
+        listenerId: user.id,
+        type: 'convert',
+        coin: 'PRC->RC',
+        amount: amount,
+        note: `プレミアム ${amount}PRC ➔ ${amount * state.rate}RC 変換申請`,
+        status: 'pending',
+        createdAt: nowStr()
+      });
+      document.getElementById('conv-amount').value = '';
+      updateConvPreview();
+      saveState();
+      alert('変換申請を送信しました！ライバーの認可をお待ちください。');
+    }
+
+    function submitRequest() {
+      const user = getActiveListener();
+      const coin = document.getElementById('req-coin').value;
+      const amount = parseInt(document.getElementById('req-amount').value || '0', 10);
+      const note = document.getElementById('req-note').value.trim() || (currentReqType === 'add' ? '増額申請' : '利用申請');
+
+      if (!amount || amount <= 0) return alert('正しい数量を入力してください');
+      if (currentReqType === 'use') {
+        const bal = coin === 'RC' ? user.rc : user.prc;
+        if (bal < amount) return alert('残高が不足しています');
+      }
+
+      state.requests.unshift({
+        id: 'req_' + Date.now(),
+        listenerId: user.id,
+        type: currentReqType,
+        coin: coin,
+        amount: amount,
+        note: note,
+        status: 'pending',
+        createdAt: nowStr()
+      });
+      document.getElementById('req-amount').value = '';
+      document.getElementById('req-note').value = '';
+      saveState();
+      alert('申請を送信しました！');
+    }
+
+    function requestAdminMode() {
+      if (adminUnlocked) {
+        switchMode('admin');
+      } else {
+        document.getElementById('input-pass').value = '';
+        document.getElementById('pass-error').classList.add('hidden');
+        document.getElementById('modal-pass').classList.remove('hidden');
+      }
+    }
+
+    function closePassModal() {
+      document.getElementById('modal-pass').classList.add('hidden');
+    }
+
+    function verifyPass() {
+      const val = document.getElementById('input-pass').value;
+      if (val === state.adminPass) {
+        adminUnlocked = true;
+        closePassModal();
+        switchMode('admin');
+      } else {
+        document.getElementById('pass-error').classList.remove('hidden');
+      }
+    }
+
+    function lockAdmin() {
+      adminUnlocked = false;
+      switchMode('listener');
+    }
+
+    function switchMode(mode) {
+      const vListener = document.getElementById('view-listener');
+      const vAdmin = document.getElementById('view-admin');
+      const bListener = document.getElementById('btn-listener-mode');
+      const bAdmin = document.getElementById('btn-admin-mode');
+
+      if (mode === 'admin') {
+        vListener.classList.add('hidden');
+        vAdmin.classList.remove('hidden');
+        bAdmin.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-active flex items-center gap-1';
+        bListener.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-inactive border border-slate-200';
+      } else {
+        vAdmin.classList.add('hidden');
+        vListener.classList.remove('hidden');
+        bListener.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-active';
+        bAdmin.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-inactive border border-rose-200 flex items-center gap-1';
+      }
+      renderAll();
+    }
+
+    function processRequest(reqId, approve) {
+      const req = state.requests.find(r => r.id === reqId);
+      if (!req || req.status !== 'pending') return;
+      const user = state.listeners.find(l => l.id === req.listenerId);
+      if (!user) return;
+
+      if (approve) {
+        if (req.type === 'convert') {
+          if (user.prc < req.amount) return alert('リスナーのPRC残高が不足しているため認可できません');
+          user.prc -= req.amount;
+          user.rc += req.amount * state.rate;
+        } else if (req.type === 'add') {
+          if (req.coin === 'RC') user.rc += req.amount;
+          else user.prc += req.amount;
+        } else if (req.type === 'use') {
+          if (req.coin === 'RC') {
+            if (user.rc < req.amount) return alert('RC残高不足です');
+            user.rc -= req.amount;
+          } else {
+            if (user.prc < req.amount) return alert('PRC残高不足です');
+            user.prc -= req.amount;
+          }
+        }
+        req.status = 'approved';
+      } else {
+        req.status = 'rejected';
+      }
+      saveState();
+    }
+
+    function approveAll() {
+      const pendings = state.requests.filter(r => r.status === 'pending');
+      if (pendings.length === 0) return alert('未承認の申請はありません');
+      pendings.forEach(r => processRequest(r.id, true));
+    }
+
+    function directModify(type) {
+      const listenerId = document.getElementById('direct-listener').value;
+      const coin = document.getElementById('direct-coin').value;
+      const amount = parseInt(document.getElementById('direct-amount').value || '0', 10);
+      const note = document.getElementById('direct-note').value.trim() || 'ライバー直接操作';
+
+      if (!amount || amount <= 0) return alert('数量を入力してください');
+      const user = state.listeners.find(l => l.id === listenerId);
+      if (!user) return;
+
+      if (type === 'add') {
+        if (coin === 'RC') user.rc += amount;
+        else user.prc += amount;
+      } else {
+        if (coin === 'RC') user.rc = Math.max(0, user.rc - amount);
+        else user.prc = Math.max(0, user.prc - amount);
+      }
+
+      state.requests.unshift({
+        id: 'dir_' + Date.now(),
+        listenerId: user.id,
+        type: type,
+        coin: coin,
+        amount: amount,
+        note: note,
+        status: 'approved',
+        createdAt: nowStr()
+      });
+
+      document.getElementById('direct-amount').value = '';
+      document.getElementById('direct-note').value = '';
+      saveState();
+      alert('残高を更新しました');
+    }
+
+    function saveRate() {
+      const val = parseInt(document.getElementById('setting-rate').value || '0', 10);
+      if (!val || val <= 0) return alert('正しいレートを入力してください');
+      state.rate = val;
+      saveState();
+      alert('変換レートを更新しました');
+    }
+
+    function savePassword() {
+      const val = document.getElementById('setting-pass').value.trim();
+      if (!val) return alert('新しいパスワードを入力してください');
+      state.adminPass = val;
+      document.getElementById('setting-pass').value = '';
+      saveState();
+      alert('パスワードを変更しました');
+    }
+
+    function openAddListenerModal() {
+      document.getElementById('new-listener-name').value = '';
+      document.getElementById('modal-listener').classList.remove('hidden');
+    }
+    function closeAddListenerModal() {
+      document.getElementById('modal-listener').classList.add('hidden');
+    }
+    function addListener() {
+      const name = document.getElementById('new-listener-name').value.trim();
+      if (!name) return alert('名前を入力してください');
+      const newId = 'u_' + Date.now();
+      state.listeners.push({ id: newId, name: name, rc: 0, prc: 0 });
+      state.activeListenerId = newId;
+      closeAddListenerModal();
+      saveState();
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'riabank_backup.json';
+      a.click();
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (parsed.listeners && parsed.requests) {
+            state = parsed;
+            saveState();
+            alert('データを復元しました');
+          }
+        } catch (err) {
+          alert('JSONファイルの読み込みに失敗しました');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function renderAll() {
+      const user = getActiveListener();
+      document.getElementById('rate-display').textContent = state.rate;
+      document.getElementById('setting-rate').value = state.rate;
+
+      // Selectors
+      const sel = document.getElementById('listener-select');
+      const dirSel = document.getElementById('direct-listener');
+      sel.innerHTML = state.listeners.map(l => `<option value="${l.id}" ${l.id === user.id ? 'selected' : ''}>${l.name}</option>`).join('');
+      dirSel.innerHTML = state.listeners.map(l => `<option value="${l.id}">${l.name} (RC:${l.rc} / PRC:${l.prc})</option>`).join('');
+
+      // Balances
+      document.getElementById('bal-rc').textContent = user.rc.toLocaleString();
+      document.getElementById('bal-prc').textContent = user.prc.toLocaleString();
+      document.getElementById('prc-worth').textContent = `リアコイン換算: ${(user.prc * state.rate).toLocaleString()} RC 相当`;
+
+      // Pending badge
+      const pendings = state.requests.filter(r => r.status === 'pending');
+      const badge = document.getElementById('badge-pending');
+      if (pendings.length > 0) {
+        badge.textContent = pendings.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      // Listener History
+      const userReqs = state.requests.filter(r => r.listenerId === user.id);
+      const histEl = document.getElementById('listener-history');
+      if (userReqs.length === 0) {
+        histEl.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">履歴はまだありません</p>`;
+      } else {
+        histEl.innerHTML = userReqs.map(r => {
+          const stBadge = r.status === 'pending'
+            ? '<span class="text-[11px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">承認待ち</span>'
+            : r.status === 'approved'
+            ? '<span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">認可済</span>'
+            : '<span class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">却下</span>';
+          const sign = r.type === 'use' ? '-' : '+';
+          const color = r.type === 'use' ? 'text-slate-700' : 'text-rose-600';
+          return `<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+            <div>
+              <div class="flex items-center gap-2">
+                ${stBadge}
+                <span class="font-bold text-slate-800">${r.note}</span>
+              </div>
+              <span class="text-[11px] text-slate-400">${r.createdAt}</span>
+            </div>
+            <div class="font-black ${color}">${sign}${r.amount.toLocaleString()} ${r.coin}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // Admin Pending Queue
+      const admPendEl = document.getElementById('admin-pending-list');
+      if (pendings.length === 0) {
+        admPendEl.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">現在、承認待ちの申請はありません</p>`;
+      } else {
+        admPendEl.innerHTML = pendings.map(r => {
+          const u = state.listeners.find(l => l.id === r.listenerId);
+          return `<div class="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-xl border border-rose-200 bg-rose-50/40">
+            <div>
+              <span class="text-xs font-black text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md mr-2">${u ? u.name : '不明'}</span>
+              <span class="font-bold text-sm text-slate-900">${r.note}</span>
+              <div class="text-xs text-slate-500 mt-0.5">申請内容: <strong class="text-rose-600">${r.type === 'use' ? '-' : '+'}${r.amount} ${r.coin}</strong> (${r.createdAt})</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="processRequest('${r.id}', true)" class="crimson-gradient text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs">認可する</button>
+              <button onclick="processRequest('${r.id}', false)" class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-xl">却下</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Admin Listeners Table
+      const tableEl = document.getElementById('admin-listeners-table');
+      tableEl.innerHTML = state.listeners.map(l => `
+        <div class="py-2.5 flex items-center justify-between">
+          <span class="font-bold text-slate-800">${l.name}</span>
+          <div class="flex gap-4 text-xs font-bold">
+            <span class="text-rose-600">RC: ${l.rc.toLocaleString()}</span>
+            <span class="text-slate-900 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">PRC: ${l.prc.toLocaleString()}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
