@@ -4,347 +4,705 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RiaBank - リアコイン銀行</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Noto Sans JP', sans-serif; background-color: #F8FAFC; color: #0F172A; }
-    .crimson-gradient { background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); }
-    .vip-card { background: linear-gradient(135deg, #FFFFFF 0%, #FFF1F2 100%); border: 2px solid #FECDD3; }
-    .tab-active { background-color: #E11D48; color: #FFFFFF; font-weight: 700; }
-    .tab-inactive { background-color: #FFFFFF; color: #475569; }
+    :root {
+      --crimson: #E11D48;
+      --crimson-dark: #BE123C;
+      --crimson-light: #FFE4E6;
+      --crimson-bg: #FFF1F2;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #0F172A;
+      --muted: #64748B;
+      --rose-border: #FECDD3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+    .header {
+      background: var(--card);
+      border-bottom: 1px solid var(--rose-border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .header-inner {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-dark));
+      color: #fff;
+      font-weight: 900;
+      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+    }
+    .brand-title { font-weight: 900; font-size: 18px; line-height: 1.1; }
+    .brand-sub { font-size: 10px; font-weight: 800; color: var(--crimson); letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
+    .sync-badge {
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-weight: 800;
+    }
+    .sync-online { background: #D1FAE5; color: #047857; }
+    .sync-local { background: #F1F5F9; color: #64748B; }
+
+    .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .container { max-width: 880px; margin: 20px auto 0; padding: 0 16px; }
+
+    button, .btn-label {
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-outline {
+      background: #fff;
+      border: 1px solid #CBD5E1;
+      color: #475569;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn-outline:hover { background: #F1F5F9; }
+    .btn-tab-active {
+      background: var(--crimson);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+    }
+    .btn-tab-inactive {
+      background: #fff;
+      color: #475569;
+      border: 1px solid var(--rose-border);
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-dark));
+      color: #fff;
+      font-weight: 800;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      width: 100%;
+      box-shadow: 0 3px 10px rgba(225, 29, 72, 0.22);
+    }
+    .btn-primary:hover { opacity: 0.94; }
+    .btn-dark {
+      background: #0F172A;
+      color: #fff;
+      font-weight: 800;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      width: 100%;
+    }
+    .badge-count {
+      background: #fff;
+      color: var(--crimson);
+      font-size: 10px;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 999px;
+      margin-left: 4px;
+      border: 1px solid var(--crimson);
+    }
+
+    .bar-card {
+      background: #fff;
+      border: 1px solid var(--rose-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .bar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    select, input[type="number"], input[type="text"], input[type="password"] {
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+    select:focus, input:focus {
+      outline: 2px solid var(--crimson);
+      border-color: transparent;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (min-width: 680px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .card-rc {
+      background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(225, 29, 72, 0.22);
+    }
+    .card-prc {
+      background: linear-gradient(135deg, #FFFFFF 0%, var(--crimson-bg) 100%);
+      border: 2px solid var(--rose-border);
+      color: var(--text);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08);
+    }
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+    .pill-white { background: rgba(255,255,255,0.22); color: #fff; }
+    .pill-crimson { background: var(--crimson); color: #fff; }
+    .balance-num { font-size: 38px; font-weight: 900; line-height: 1.1; margin-top: 12px; }
+    .balance-unit { font-size: 15px; font-weight: 800; margin-left: 4px; }
+
+    .box {
+      background: #fff;
+      border: 1px solid var(--rose-border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .box-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot-bar {
+      width: 6px; height: 18px;
+      background: var(--crimson);
+      border-radius: 99px;
+      display: inline-block;
+    }
+
+    .notice-box {
+      background: var(--crimson-bg);
+      border: 1px solid var(--rose-border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 12px;
+    }
+    .preset-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .preset-btn {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: var(--crimson-bg);
+      color: var(--crimson-dark);
+      border: 1px solid var(--rose-border);
+    }
+    .preset-btn-use {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #E2E8F0;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #F1F5F9;
+      background: #F8FAFC;
+      margin-bottom: 8px;
+    }
+    .status-pending { background: #FEF3C7; color: #B45309; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 99px; }
+    .status-approved { background: #D1FAE5; color: #047857; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 99px; }
+    .status-rejected { background: #E2E8F0; color: #475569; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 99px; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+    .modal-card {
+      background: #fff;
+      border: 2px solid var(--rose-border);
+      border-radius: 20px;
+      max-width: 380px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+    .hidden { display: none !important; }
+    .form-row { margin-bottom: 12px; }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+    .w-full { width: 100%; }
   </style>
 </head>
-<body class="min-h-screen pb-16">
+<body>
 
   <!-- Header -->
-  <header class="bg-white border-b border-rose-100 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl crimson-gradient flex items-center justify-center text-white font-black text-lg shadow-sm">R</div>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">R</div>
         <div>
-          <h1 class="font-black text-lg tracking-tight text-slate-900 leading-none">RiaBank</h1>
-          <p class="text-[11px] text-rose-600 font-bold">OFFICIAL COIN BANK</p>
+          <div class="brand-title">RiaBank</div>
+          <div class="brand-sub">
+            <span>OFFICIAL COIN BANK</span>
+            <span id="sync-status" class="sync-badge sync-local">端末内保存モード</span>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button onclick="exportData()" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 font-medium text-slate-600">保存(JSON)</button>
-        <label class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 font-medium text-slate-600 cursor-pointer">
+      <div class="header-actions">
+        <button class="btn-outline" onclick="exportData()">保存(JSON)</button>
+        <label class="btn-outline btn-label">
           復元
           <input type="file" accept=".json" onchange="importData(event)" class="hidden">
         </label>
-        <div class="h-4 w-px bg-slate-200 mx-1"></div>
-        <button id="btn-listener-mode" onclick="switchMode('listener')" class="text-xs px-3 py-1.5 rounded-lg font-bold transition tab-active">リスナー画面</button>
-        <button id="btn-admin-mode" onclick="requestAdminMode()" class="text-xs px-3 py-1.5 rounded-lg font-bold transition tab-inactive border border-rose-200 flex items-center gap-1">
-          <span>🔒 ライバー管理</span>
-          <span id="badge-pending" class="hidden bg-rose-600 text-white text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        <button id="btn-listener-mode" class="btn-tab-active" onclick="switchMode('listener')">リスナー画面</button>
+        <button id="btn-admin-mode" class="btn-tab-inactive" onclick="requestAdminMode()">
+          🔒 ライバー管理 <span id="badge-pending" class="badge-count hidden">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 mt-6">
-    <!-- Listener Switcher Bar -->
-    <div class="bg-white rounded-2xl p-3.5 border border-rose-100 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="text-xs font-bold text-slate-500">表示中の口座:</span>
-        <select id="listener-select" onchange="changeActiveListener(this.value)" class="text-sm font-bold bg-rose-50/60 border border-rose-200 text-slate-800 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-rose-500"></select>
-        <button onclick="openAddListenerModal()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 px-2.5 py-1.5 rounded-xl border border-rose-200">＋ 新規リスナー追加</button>
+  <main class="container">
+    <!-- Listener Bar -->
+    <div class="bar-card">
+      <div class="bar-left">
+        <span style="font-size:12px;font-weight:800;color:#64748B;">あなたの口座を選択:</span>
+        <select id="listener-select" onchange="changeActiveListener(this.value)" style="font-weight:800;background:#FFF1F2;border-color:#FECDD3;"></select>
+        <button class="preset-btn" onclick="openAddListenerModal()">＋ 新規リスナー追加</button>
       </div>
-      <div class="text-xs text-slate-500 font-medium">
-        現在の変換レート: <span class="font-bold text-rose-600">1 プレミアム = <span id="rate-display">100</span> リアコイン</span>
+      <div style="font-size:12px;color:#64748B;font-weight:700;">
+        変換レート: <span style="color:#E11D48;font-weight:900;">1 プレミアム = <span id="rate-display">100</span> リアコイン</span>
       </div>
     </div>
 
     <!-- LISTENER VIEW -->
-    <div id="view-listener" class="space-y-6">
-      <!-- Balance Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Standard Ria Coin Card -->
-        <div class="crimson-gradient rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">STANDARD CURRENCY</span>
-              <h2 class="text-lg font-bold mt-2">リアコイン残高</h2>
-            </div>
-            <svg class="w-10 h-10 opacity-90" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="18" fill="#FFF" fill-opacity="0.2" stroke="#FFF" stroke-width="2"/>
-              <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">R</text>
-            </svg>
-          </div>
-          <div class="mt-4 flex items-baseline gap-1.5">
-            <span id="bal-rc" class="text-4xl font-black tracking-tight">0</span>
-            <span class="text-sm font-bold opacity-90">RC</span>
-          </div>
-          <p class="text-[11px] opacity-80 mt-2">特典交換・リクエスト等に利用できる通常通貨</p>
+    <div id="view-listener">
+      <div class="grid-2">
+        <div class="card-rc">
+          <span class="pill pill-white">STANDARD CURRENCY</span>
+          <div style="font-size:17px;font-weight:800;margin-top:8px;">リアコイン残高</div>
+          <div class="balance-num"><span id="bal-rc">0</span><span class="balance-unit">RC</span></div>
+          <div style="font-size:11px;opacity:0.85;margin-top:8px;">特典交換・リクエスト等に利用できる通常通貨</div>
         </div>
 
-        <!-- Premium Ria Coin Card -->
-        <div class="vip-card rounded-2xl p-5 text-slate-900 shadow-sm relative overflow-hidden">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider bg-rose-600 text-white px-2 py-0.5 rounded-full">VIP RUBY / GOLD</span>
-              <h2 class="text-lg font-bold mt-2 text-rose-950">プレミアムリアコイン残高</h2>
-            </div>
-            <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="18" fill="#FFE4E6" stroke="#E11D48" stroke-width="2"/>
-              <path d="M12 25L14 15L20 20L26 15L28 25H12Z" fill="#E11D48"/>
-            </svg>
-          </div>
-          <div class="mt-4 flex items-baseline gap-1.5">
-            <span id="bal-prc" class="text-4xl font-black tracking-tight text-rose-600">0</span>
-            <span class="text-sm font-bold text-rose-700">PRC</span>
-          </div>
-          <p id="prc-worth" class="text-[11px] text-rose-700 font-medium mt-2">リアコイン換算: 0 RC 相当</p>
+        <div class="card-prc">
+          <span class="pill pill-crimson">VIP RUBY / GOLD</span>
+          <div style="font-size:17px;font-weight:800;margin-top:8px;color:#881337;">プレミアムリアコイン残高</div>
+          <div class="balance-num" style="color:#E11D48;"><span id="bal-prc">0</span><span class="balance-unit">PRC</span></div>
+          <div id="prc-worth" style="font-size:11px;font-weight:700;color:#BE123C;margin-top:8px;">リアコイン換算: 0 RC 相当</div>
         </div>
       </div>
 
-      <!-- Actions Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- 1-Way Conversion Form -->
-        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-base text-slate-900 flex items-center gap-1.5">
-              <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
-              コイン変換申請
-            </h3>
-            <span class="text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">一方向限定</span>
+      <div class="grid-2">
+        <!-- Conversion -->
+        <div class="box">
+          <div class="box-title">
+            <span class="dot-bar"></span>
+            <span>コイン変換申請（一方向限定）</span>
           </div>
 
-          <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 mb-4 text-xs">
-            <div class="flex items-center justify-between font-bold text-slate-800">
+          <div class="notice-box">
+            <div style="font-weight:800;display:flex;justify-content:space-between;color:#881337;">
               <span>✨ プレミアム (PRC)</span>
-              <span class="text-rose-600">➔</span>
+              <span style="color:#E11D48;">➔</span>
               <span>🪙 リアコイン (RC)</span>
             </div>
-            <div class="mt-1.5 pt-1.5 border-t border-rose-200/60 text-[11px] text-slate-500 flex items-center gap-1">
-              <span>🔒</span>
-              <span>※リアコインからプレミアムリアコインへの逆変換はできません</span>
+            <div style="margin-top:6px;padding-top:6px;border-top:1px solid #FECDD3;color:#64748B;font-size:11px;">
+              🔒 ※リアコインからプレミアムリアコインへの逆変換はできません
             </div>
           </div>
 
-          <div class="space-y-3">
-            <div>
-              <label class="text-xs font-bold text-slate-600 block mb-1">変換するプレミアムリアコイン数 (PRC)</label>
-              <input id="conv-amount" type="number" min="1" placeholder="例: 1" oninput="updateConvPreview()" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
-            </div>
-            <div class="bg-slate-50 rounded-xl p-3 flex justify-between items-center text-xs">
-              <span class="text-slate-500 font-medium">変換後の受取予定:</span>
-              <span id="conv-preview" class="font-black text-rose-600 text-sm">+ 0 RC</span>
-            </div>
-            <button onclick="submitConversion()" class="w-full crimson-gradient text-white font-bold py-2.5 rounded-xl text-sm shadow-sm hover:opacity-95 transition">変換を申請する</button>
+          <div class="form-row">
+            <label class="form-label">変換するプレミアムリアコイン数 (PRC)</label>
+            <input id="conv-amount" type="number" min="1" placeholder="例: 1" oninput="updateConvPreview()" class="w-full">
           </div>
+
+          <div style="background:#F8FAFC;padding:10px 12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12px;">
+            <span style="color:#64748B;font-weight:700;">変換後の受取予定:</span>
+            <span id="conv-preview" style="color:#E11D48;font-weight:900;font-size:15px;">+ 0 RC</span>
+          </div>
+
+          <button class="btn-primary" onclick="submitConversion()">変換を申請する</button>
         </div>
 
-        <!-- Gain / Use Application Form -->
-        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
-          <h3 class="font-bold text-base text-slate-900 flex items-center gap-1.5 mb-3">
-            <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
-            増額・利用（特典交換）申請
-          </h3>
-
-          <div class="grid grid-cols-2 gap-2 mb-3">
-            <button id="type-add" onclick="setReqType('add')" class="py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white">＋ 増額（獲得）申請</button>
-            <button id="type-use" onclick="setReqType('use')" class="py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600">－ 利用（交換）申請</button>
+        <!-- Add / Use Request -->
+        <div class="box">
+          <div class="box-title">
+            <span class="dot-bar"></span>
+            <span>増額・利用（特典交換）申請</span>
           </div>
 
-          <!-- Quick Presets -->
-          <div class="mb-3">
-            <span class="text-[11px] font-bold text-slate-400 block mb-1">クイック入力プリセット:</span>
-            <div class="flex flex-wrap gap-1.5">
-              <button onclick="applyPreset('add','RC',100,'配信視聴ボーナス')" class="text-[11px] bg-rose-50 hover:bg-rose-100 text-rose-700 px-2 py-1 rounded-lg border border-rose-200 font-medium">+100RC 視聴</button>
-              <button onclick="applyPreset('add','PRC',1,'企画・ガチャ獲得')" class="text-[11px] bg-rose-50 hover:bg-rose-100 text-rose-700 px-2 py-1 rounded-lg border border-rose-200 font-medium">+1PRC 企画獲得</button>
-              <button onclick="applyPreset('use','RC',300,'アイコンリング交換')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-medium">-300RC リング</button>
-              <button onclick="applyPreset('use','RC',500,'リクエスト歌唱')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-medium">-500RC 歌唱</button>
-            </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <button id="type-add" class="btn-tab-active" onclick="setReqType('add')">＋ 増額（獲得）申請</button>
+            <button id="type-use" class="btn-tab-inactive" onclick="setReqType('use')">－ 利用（交換）申請</button>
           </div>
 
-          <div class="space-y-2.5">
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-xs font-bold text-slate-600 block mb-1">通貨種別</label>
-                <select id="req-coin" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-sm bg-white">
-                  <option value="RC">リアコイン (RC)</option>
-                  <option value="PRC">プレミアム (PRC)</option>
-                </select>
-              </div>
-              <div>
-                <label class="text-xs font-bold text-slate-600 block mb-1">数量</label>
-                <input id="req-amount" type="number" min="1" placeholder="100" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-              </div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;margin-bottom:6px;">クイック入力プリセット:</div>
+          <div class="preset-wrap">
+            <button class="preset-btn" onclick="applyPreset('add','RC',100,'配信視聴ボーナス')">+100RC 視聴</button>
+            <button class="preset-btn" onclick="applyPreset('add','PRC',1,'企画・ガチャ獲得')">+1PRC 企画獲得</button>
+            <button class="preset-btn-use" onclick="applyPreset('use','RC',300,'アイコンリング交換')">-300RC リング</button>
+            <button class="preset-btn-use" onclick="applyPreset('use','RC',500,'リクエスト歌唱')">-500RC 歌唱</button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" class="form-row">
+            <div>
+              <label class="form-label">通貨種別</label>
+              <select id="req-coin" class="w-full">
+                <option value="RC">リアコイン (RC)</option>
+                <option value="PRC">プレミアム (PRC)</option>
+              </select>
             </div>
             <div>
-              <label class="text-xs font-bold text-slate-600 block mb-1">理由・特典メモ</label>
-              <input id="req-note" type="text" placeholder="例: バッジ特典、ボイス交換など" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+              <label class="form-label">数量</label>
+              <input id="req-amount" type="number" min="1" placeholder="100" class="w-full">
             </div>
-            <button onclick="submitRequest()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">ライバーへ申請を送る</button>
           </div>
+
+          <div class="form-row">
+            <label class="form-label">理由・特典メモ</label>
+            <input id="req-note" type="text" placeholder="例: バッジ特典、ボイス交換など" class="w-full">
+          </div>
+
+          <button class="btn-dark" onclick="submitRequest()">ライバーへ申請を送る</button>
         </div>
       </div>
 
-      <!-- Listener Pending & Bankbook History -->
-      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
-        <h3 class="font-bold text-base text-slate-900 mb-3 flex items-center gap-1.5">
-          <span class="w-2 h-5 rounded-full bg-rose-600 inline-block"></span>
-          あなたの申請状況・通帳履歴
-        </h3>
-        <div id="listener-history" class="space-y-2 text-sm"></div>
+      <!-- History -->
+      <div class="box">
+        <div class="box-title">
+          <span class="dot-bar"></span>
+          <span>あなたの申請状況・通帳履歴</span>
+        </div>
+        <div id="listener-history"></div>
       </div>
     </div>
 
-    <!-- ADMIN (STREAMER) VIEW -->
-    <div id="view-admin" class="hidden space-y-6">
-      <div class="bg-rose-600 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+    <!-- ADMIN VIEW -->
+    <div id="view-admin" class="hidden">
+      <div class="card-rc" style="margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
         <div>
-          <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full">STREAMER ADMIN MODE</span>
-          <h2 class="text-lg font-black mt-1">ライバー認可・銀行管理コンソール</h2>
+          <span class="pill pill-white">STREAMER ADMIN MODE</span>
+          <div style="font-size:18px;font-weight:900;margin-top:4px;">ライバー認可・銀行管理コンソール</div>
         </div>
-        <button onclick="lockAdmin()" class="bg-white text-rose-600 font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm hover:bg-rose-50">🔒 ロックしてリスナー画面へ戻る</button>
+        <button class="btn-outline" style="color:#E11D48;border:none;padding:8px 14px;" onclick="lockAdmin()">🔒 ロックしてリスナー画面へ戻る</button>
       </div>
 
-      <!-- Pending Approvals -->
-      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <h3 class="font-bold text-base text-slate-900">未承認の申請キュー</h3>
-          <button onclick="approveAll()" class="text-xs crimson-gradient text-white font-bold px-3.5 py-2 rounded-xl shadow-sm">✓ すべて一括認可して残高反映</button>
+      <!-- Cloud Sync Setting Box -->
+      <div class="box" style="margin-bottom:20px;border:2px solid #FECDD3;background:#FFF1F2;">
+        <div class="box-title" style="color:#881337;margin-bottom:8px;">
+          <span>☁️ リアルタイム同期（Firebase）設定</span>
         </div>
-        <div id="admin-pending-list" class="space-y-2.5"></div>
+        <p style="font-size:12px;color:#475569;margin-bottom:10px;">
+          Firebase Realtime DatabaseのURL（<code>https://〇〇.firebaseio.com/</code>）を入力して保存すると、リスナーのスマホとリアルタイムで残高・申請が自動同期されます。
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input id="firebase-url-input" type="text" placeholder="https://your-project-default-rtdb.firebaseio.com/" style="flex:1;min-width:220px;">
+          <button class="btn-tab-active" onclick="saveFirebaseUrl()">接続・保存</button>
+        </div>
+        <div id="share-link-box" class="hidden" style="margin-top:12px;padding-top:12px;border-top:1px solid #FECDD3;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+          <span style="font-size:12px;font-weight:800;color:#047857;">✓ クラウド同期中！この専用リンクをリスナーに共有してください：</span>
+          <button class="btn-dark" style="width:auto;padding:7px 14px;font-size:12px;" onclick="copyShareUrl()">📋 リスナー配布用・同期リンクをコピー</button>
+        </div>
       </div>
 
-      <!-- Direct Balance Adjust & Settings -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm space-y-3">
-          <h3 class="font-bold text-base text-slate-900">ライバー直接残高操作（即時反映）</h3>
-          <div>
-            <label class="text-xs font-bold text-slate-600 block mb-1">対象リスナー</label>
-            <select id="direct-listener" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"></select>
+      <div class="box" style="margin-bottom:20px;">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;">
+          <div class="box-title" style="margin-bottom:0;"><span class="dot-bar"></span><span>未承認の申請キュー</span></div>
+          <button class="btn-tab-active" onclick="approveAll()">✓ すべて一括認可して残高反映</button>
+        </div>
+        <div id="admin-pending-list"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="box">
+          <div class="box-title"><span class="dot-bar"></span><span>ライバー直接残高操作（即時反映）</span></div>
+          <div class="form-row">
+            <label class="form-label">対象リスナー</label>
+            <select id="direct-listener" class="w-full"></select>
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <select id="direct-coin" class="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" class="form-row">
+            <select id="direct-coin" class="w-full">
               <option value="RC">リアコイン (RC)</option>
               <option value="PRC">プレミアム (PRC)</option>
             </select>
-            <input id="direct-amount" type="number" placeholder="数量 (例: 100)" class="border border-slate-200 rounded-xl px-3 py-2 text-sm">
+            <input id="direct-amount" type="number" placeholder="数量 (例: 100)" class="w-full">
           </div>
-          <input id="direct-note" type="text" placeholder="理由 (例: イベント応援お礼)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="directModify('add')" class="crimson-gradient text-white font-bold py-2 rounded-xl text-xs">＋ 付与する</button>
-            <button onclick="directModify('use')" class="bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">－ 減算する</button>
+          <div class="form-row">
+            <input id="direct-note" type="text" placeholder="理由 (例: イベント応援お礼)" class="w-full">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-primary" onclick="directModify('add')">＋ 付与する</button>
+            <button class="btn-dark" onclick="directModify('use')">－ 減算する</button>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm space-y-4">
-          <h3 class="font-bold text-base text-slate-900">レート＆セキュリティ設定</h3>
-          <div>
-            <label class="text-xs font-bold text-slate-600 block mb-1">プレミアム1枚あたりのリアコイン変換数</label>
-            <div class="flex gap-2">
-              <input id="setting-rate" type="number" min="1" class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-              <button onclick="saveRate()" class="bg-rose-600 text-white font-bold px-4 rounded-xl text-xs">保存</button>
+        <div class="box">
+          <div class="box-title"><span class="dot-bar"></span><span>レート＆セキュリティ設定</span></div>
+          <div class="form-row">
+            <label class="form-label">プレミアム1枚あたりのリアコイン変換数</label>
+            <div style="display:flex;gap:8px;">
+              <input id="setting-rate" type="number" min="1" class="w-full">
+              <button class="btn-tab-active" style="white-space:nowrap;" onclick="saveRate()">保存</button>
             </div>
           </div>
-          <div class="pt-3 border-t border-slate-100">
-            <label class="text-xs font-bold text-slate-600 block mb-1">ライバー管理パスワード変更（現在値で保護中）</label>
-            <div class="flex gap-2">
-              <input id="setting-pass" type="password" placeholder="新しい暗証番号・パスワード" class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-              <button onclick="savePassword()" class="bg-slate-900 text-white font-bold px-4 rounded-xl text-xs">変更</button>
+          <div class="form-row" style="margin-top:16px;padding-top:14px;border-top:1px solid #F1F5F9;">
+            <label class="form-label">ライバー管理パスワード変更</label>
+            <div style="display:flex;gap:8px;">
+              <input id="setting-pass" type="password" placeholder="新しいパスワード" class="w-full">
+              <button class="btn-dark" style="width:auto;white-space:nowrap;padding:8px 16px;" onclick="savePassword()">変更</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- All Listeners Balances -->
-      <div class="bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
-        <h3 class="font-bold text-base text-slate-900 mb-3">全リスナー残高一覧</h3>
-        <div id="admin-listeners-table" class="divide-y divide-slate-100 text-sm"></div>
+      <div class="box">
+        <div class="box-title"><span class="dot-bar"></span><span>全リスナー残高一覧（削除も可能）</span></div>
+        <div id="admin-listeners-table"></div>
       </div>
     </div>
   </main>
 
   <!-- Password Modal -->
-  <div id="modal-pass" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 border border-rose-100 shadow-xl">
-      <h3 class="font-black text-lg text-slate-900">🔒 ライバー認証</h3>
-      <p class="text-xs text-slate-500 mt-1">管理画面に入るにはパスワードを入力してください（初期値: 0000）</p>
-      <input id="input-pass" type="password" placeholder="パスワードを入力" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm mt-4 focus:outline-none focus:ring-2 focus:ring-rose-500">
-      <p id="pass-error" class="hidden text-xs text-rose-600 font-bold mt-2">パスワードが違います</p>
-      <div class="flex justify-end gap-2 mt-5">
-        <button onclick="closePassModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">キャンセル</button>
-        <button onclick="verifyPass()" class="crimson-gradient text-white px-5 py-2 rounded-xl text-xs font-bold">ロック解除</button>
+  <div id="modal-pass" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div style="font-weight:900;font-size:18px;">🔒 ライバー認証</div>
+      <p style="font-size:12px;color:#64748B;margin-top:4px;">管理画面に入るにはパスワードを入力してください（初期値: 0000）</p>
+      <input id="input-pass" type="password" placeholder="パスワードを入力" class="w-full" style="margin-top:14px;">
+      <p id="pass-error" class="hidden" style="font-size:12px;color:#E11D48;font-weight:800;margin-top:8px;">パスワードが違います</p>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">
+        <button class="btn-outline" onclick="closePassModal()">キャンセル</button>
+        <button class="btn-tab-active" onclick="verifyPass()">ロック解除</button>
       </div>
     </div>
   </div>
 
   <!-- Add Listener Modal -->
-  <div id="modal-listener" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 border border-rose-100 shadow-xl">
-      <h3 class="font-black text-lg text-slate-900">＋ 新規リスナー口座作成</h3>
-      <input id="new-listener-name" type="text" placeholder="リスナー名を入力" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm mt-4">
-      <div class="flex justify-end gap-2 mt-5">
-        <button onclick="closeAddListenerModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">キャンセル</button>
-        <button onclick="addListener()" class="crimson-gradient text-white px-5 py-2 rounded-xl text-xs font-bold">追加する</button>
+  <div id="modal-listener" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div style="font-weight:900;font-size:18px;">＋ 新規リスナー口座作成</div>
+      <input id="new-listener-name" type="text" placeholder="リスナー名を入力" class="w-full" style="margin-top:14px;">
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">
+        <button class="btn-outline" onclick="closeAddListenerModal()">キャンセル</button>
+        <button class="btn-tab-active" onclick="addListener()">追加する</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'riabank_v1_state';
+    // ★ここにFirebaseのURLを直接書いておくと、パラメータ無しでも全員自動同期になります
+    const HARDCODED_DB_URL = ""; 
+
+    const STORAGE_KEY = 'riabank_v2_state';
+    const ACTIVE_USER_KEY = 'riabank_active_user';
+    const DB_URL_KEY = 'riabank_firebase_url';
+
     let currentReqType = 'add';
     let adminUnlocked = false;
+    let pollTimer = null;
 
     const defaultState = {
       rate: 100,
       adminPass: '0000',
-      activeListenerId: 'u1',
       listeners: [
         { id: 'u1', name: 'サンプルリスナーA', rc: 500, prc: 3 },
         { id: 'u2', name: 'サンプルリスナーB', rc: 120, prc: 1 }
       ],
       requests: [
-        { id: 'r1', listenerId: 'u1', type: 'add', coin: 'RC', amount: 100, note: '配信視聴ボーナス', status: 'pending', createdAt: '2026-11-19 02:00' }
+        { id: 'r1', listenerId: 'u1', type: 'add', coin: 'RC', amount: 100, note: '配信視聴ボーナス', status: 'pending', createdAt: '11/19 02:00' }
       ]
     };
 
-    let state = loadState();
+    // URLパラメータ ?db=... があれば自動取得して保存
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('db')) {
+      localStorage.setItem(DB_URL_KEY, urlParams.get('db').trim());
+    }
 
-    function loadState() {
+    function getDbUrl() {
+      const saved = HARDCODED_DB_URL || localStorage.getItem(DB_URL_KEY) || '';
+      return saved.replace(/\/+$/, '');
+    }
+
+    let state = loadLocalState();
+    let activeListenerId = localStorage.getItem(ACTIVE_USER_KEY) || (state.listeners[0] && state.listeners[0].id) || 'u1';
+
+    function loadLocalState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultState));
+        if (!raw) return JSON.parse(JSON.stringify(defaultState));
+        const parsed = JSON.parse(raw);
+        if (!parsed.listeners) parsed.listeners = [];
+        if (!parsed.requests) parsed.requests = [];
+        return parsed;
       } catch (e) {
         return JSON.parse(JSON.stringify(defaultState));
+      }
+    }
+
+    async function syncFromCloud() {
+      const dbUrl = getDbUrl();
+      if (!dbUrl) return;
+      try {
+        const res = await fetch(dbUrl + '/riabank.json');
+        if (!res.ok) return;
+        const cloudData = await res.json();
+        if (cloudData && cloudData.listeners) {
+          state = {
+            rate: cloudData.rate || 100,
+            adminPass: cloudData.adminPass || '0000',
+            listeners: cloudData.listeners || [],
+            requests: cloudData.requests || []
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          renderAll();
+        } else if (cloudData === null) {
+          // クラウドが空なら現在のデータを初回アップロード
+          await pushToCloud();
+        }
+        updateSyncBadge(true);
+      } catch (e) {
+        updateSyncBadge(false);
+      }
+    }
+
+    async function pushToCloud() {
+      const dbUrl = getDbUrl();
+      if (!dbUrl) return;
+      try {
+        await fetch(dbUrl + '/riabank.json', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state)
+        });
+        updateSyncBadge(true);
+      } catch (e) {
+        updateSyncBadge(false);
+      }
+    }
+
+    function updateSyncBadge(online) {
+      const el = document.getElementById('sync-status');
+      const shareBox = document.getElementById('share-link-box');
+      if (getDbUrl() && online) {
+        el.textContent = '☁️ リアルタイム同期中';
+        el.className = 'sync-badge sync-online';
+        if (shareBox) shareBox.classList.remove('hidden');
+      } else {
+        el.textContent = '端末内保存モード';
+        el.className = 'sync-badge sync-local';
+        if (shareBox) shareBox.classList.add('hidden');
       }
     }
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       renderAll();
+      pushToCloud();
+    }
+
+    function saveFirebaseUrl() {
+      const val = document.getElementById('firebase-url-input').value.trim();
+      if (!val) {
+        localStorage.removeItem(DB_URL_KEY);
+        updateSyncBadge(false);
+        return alert('クラウド同期を解除し、端末内保存モードに戻しました');
+      }
+      if (!val.startsWith('https://')) {
+        return alert('https:// から始まるFirebase Realtime DatabaseのURLを入力してください');
+      }
+      localStorage.setItem(DB_URL_KEY, val);
+      syncFromCloud().then(() => {
+        alert('Firebaseに接続しました！下部の「リスナー配布用・同期リンク」をコピーしてリスナーに共有してください。');
+      });
+    }
+
+    function copyShareUrl() {
+      const dbUrl = getDbUrl();
+      if (!dbUrl) return alert('先にFirebaseのURLを保存してください');
+      const base = window.location.origin + window.location.pathname;
+      const shareUrl = base + '?db=' + encodeURIComponent(dbUrl);
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('リスナー配布用URLをコピーしました！\n' + shareUrl);
+      }).catch(() => {
+        prompt('こちらのURLをコピーしてリスナーに共有してください:', shareUrl);
+      });
     }
 
     function nowStr() {
       const d = new Date();
-      return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
     }
 
     function getActiveListener() {
-      return state.listeners.find(l => l.id === state.activeListenerId) || state.listeners[0];
+      return state.listeners.find(l => l.id === activeListenerId) || state.listeners[0] || { id: 'none', name: '未登録', rc: 0, prc: 0 };
     }
 
     function changeActiveListener(id) {
-      state.activeListenerId = id;
-      saveState();
+      activeListenerId = id;
+      localStorage.setItem(ACTIVE_USER_KEY, id);
+      renderAll();
     }
 
     function setReqType(type) {
       currentReqType = type;
-      const btnAdd = document.getElementById('type-add');
-      const btnUse = document.getElementById('type-use');
-      if (type === 'add') {
-        btnAdd.className = 'py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white';
-        btnUse.className = 'py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600';
-      } else {
-        btnUse.className = 'py-2 rounded-xl text-xs font-bold border border-rose-600 bg-rose-600 text-white';
-        btnAdd.className = 'py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600';
-      }
+      document.getElementById('type-add').className = type === 'add' ? 'btn-tab-active' : 'btn-tab-inactive';
+      document.getElementById('type-use').className = type === 'use' ? 'btn-tab-active' : 'btn-tab-inactive';
     }
 
     function applyPreset(type, coin, amount, note) {
@@ -357,7 +715,7 @@
     function updateConvPreview() {
       const val = parseInt(document.getElementById('conv-amount').value || '0', 10);
       const rc = val > 0 ? val * state.rate : 0;
-      document.getElementById('conv-preview').textContent = `+ ${rc.toLocaleString()} RC`;
+      document.getElementById('conv-preview').textContent = '+ ' + rc.toLocaleString() + ' RC';
     }
 
     function submitConversion() {
@@ -372,7 +730,7 @@
         type: 'convert',
         coin: 'PRC->RC',
         amount: amount,
-        note: `プレミアム ${amount}PRC ➔ ${amount * state.rate}RC 変換申請`,
+        note: 'プレミアム ' + amount + 'PRC ➔ ' + (amount * state.rate) + 'RC 変換申請',
         status: 'pending',
         createdAt: nowStr()
       });
@@ -449,13 +807,13 @@
       if (mode === 'admin') {
         vListener.classList.add('hidden');
         vAdmin.classList.remove('hidden');
-        bAdmin.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-active flex items-center gap-1';
-        bListener.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-inactive border border-slate-200';
+        bAdmin.className = 'btn-tab-active';
+        bListener.className = 'btn-tab-inactive';
       } else {
         vAdmin.classList.add('hidden');
         vListener.classList.remove('hidden');
-        bListener.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-active';
-        bAdmin.className = 'text-xs px-3 py-1.5 rounded-lg font-bold transition tab-inactive border border-rose-200 flex items-center gap-1';
+        bListener.className = 'btn-tab-active';
+        bAdmin.className = 'btn-tab-inactive';
       }
       renderAll();
     }
@@ -531,6 +889,14 @@
       alert('残高を更新しました');
     }
 
+    function deleteListener(id) {
+      if (state.listeners.length <= 1) return alert('最低1つの口座が必要です');
+      if (!confirm('このリスナー口座を削除しますか？')) return;
+      state.listeners = state.listeners.filter(l => l.id !== id);
+      if (activeListenerId === id) activeListenerId = state.listeners[0].id;
+      saveState();
+    }
+
     function saveRate() {
       const val = parseInt(document.getElementById('setting-rate').value || '0', 10);
       if (!val || val <= 0) return alert('正しいレートを入力してください');
@@ -560,7 +926,8 @@
       if (!name) return alert('名前を入力してください');
       const newId = 'u_' + Date.now();
       state.listeners.push({ id: newId, name: name, rc: 0, prc: 0 });
-      state.activeListenerId = newId;
+      activeListenerId = newId;
+      localStorage.setItem(ACTIVE_USER_KEY, newId);
       closeAddListenerModal();
       saveState();
     }
@@ -580,8 +947,9 @@
       reader.onload = function(evt) {
         try {
           const parsed = JSON.parse(evt.target.result);
-          if (parsed.listeners && parsed.requests) {
+          if (parsed.listeners) {
             state = parsed;
+            if (!state.requests) state.requests = [];
             saveState();
             alert('データを復元しました');
           }
@@ -596,20 +964,20 @@
       const user = getActiveListener();
       document.getElementById('rate-display').textContent = state.rate;
       document.getElementById('setting-rate').value = state.rate;
+      document.getElementById('firebase-url-input').value = getDbUrl();
 
-      // Selectors
       const sel = document.getElementById('listener-select');
       const dirSel = document.getElementById('direct-listener');
-      sel.innerHTML = state.listeners.map(l => `<option value="${l.id}" ${l.id === user.id ? 'selected' : ''}>${l.name}</option>`).join('');
-      dirSel.innerHTML = state.listeners.map(l => `<option value="${l.id}">${l.name} (RC:${l.rc} / PRC:${l.prc})</option>`).join('');
+      const currentDirVal = dirSel.value;
 
-      // Balances
+      sel.innerHTML = state.listeners.map(l => '<option value="' + l.id + '" ' + (l.id === user.id ? 'selected' : '') + '>' + l.name + '</option>').join('');
+      dirSel.innerHTML = state.listeners.map(l => '<option value="' + l.id + '" ' + (l.id === currentDirVal ? 'selected' : '') + '>' + l.name + ' (RC:' + l.rc + ' / PRC:' + l.prc + ')</option>').join('');
+
       document.getElementById('bal-rc').textContent = user.rc.toLocaleString();
       document.getElementById('bal-prc').textContent = user.prc.toLocaleString();
-      document.getElementById('prc-worth').textContent = `リアコイン換算: ${(user.prc * state.rate).toLocaleString()} RC 相当`;
+      document.getElementById('prc-worth').textContent = 'リアコイン換算: ' + (user.prc * state.rate).toLocaleString() + ' RC 相当';
 
-      // Pending badge
-      const pendings = state.requests.filter(r => r.status === 'pending');
+      const pendings = (state.requests || []).filter(r => r.status === 'pending');
       const badge = document.getElementById('badge-pending');
       if (pendings.length > 0) {
         badge.textContent = pendings.length;
@@ -618,68 +986,70 @@
         badge.classList.add('hidden');
       }
 
-      // Listener History
-      const userReqs = state.requests.filter(r => r.listenerId === user.id);
+      const userReqs = (state.requests || []).filter(r => r.listenerId === user.id);
       const histEl = document.getElementById('listener-history');
       if (userReqs.length === 0) {
-        histEl.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">履歴はまだありません</p>`;
+        histEl.innerHTML = '<p style="font-size:12px;color:#94A3B8;text-align:center;padding:16px 0;">履歴はまだありません</p>';
       } else {
         histEl.innerHTML = userReqs.map(r => {
           const stBadge = r.status === 'pending'
-            ? '<span class="text-[11px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">承認待ち</span>'
+            ? '<span class="status-pending">承認待ち</span>'
             : r.status === 'approved'
-            ? '<span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">認可済</span>'
-            : '<span class="text-[11px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">却下</span>';
+            ? '<span class="status-approved">認可済</span>'
+            : '<span class="status-rejected">却下</span>';
           const sign = r.type === 'use' ? '-' : '+';
-          const color = r.type === 'use' ? 'text-slate-700' : 'text-rose-600';
-          return `<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-            <div>
-              <div class="flex items-center gap-2">
-                ${stBadge}
-                <span class="font-bold text-slate-800">${r.note}</span>
-              </div>
-              <span class="text-[11px] text-slate-400">${r.createdAt}</span>
-            </div>
-            <div class="font-black ${color}">${sign}${r.amount.toLocaleString()} ${r.coin}</div>
-          </div>`;
+          const color = r.type === 'use' ? '#334155' : '#E11D48';
+          return '<div class="history-item">' +
+            '<div>' +
+              '<div style="display:flex;align-items:center;gap:8px;">' + stBadge + '<strong style="font-size:13px;">' + r.note + '</strong></div>' +
+              '<div style="font-size:11px;color:#94A3B8;margin-top:2px;">' + r.createdAt + '</div>' +
+            '</div>' +
+            '<div style="font-weight:900;color:' + color + ';">' + sign + r.amount.toLocaleString() + ' ' + r.coin + '</div>' +
+          '</div>';
         }).join('');
       }
 
-      // Admin Pending Queue
       const admPendEl = document.getElementById('admin-pending-list');
       if (pendings.length === 0) {
-        admPendEl.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">現在、承認待ちの申請はありません</p>`;
+        admPendEl.innerHTML = '<p style="font-size:12px;color:#94A3B8;text-align:center;padding:16px 0;">現在、承認待ちの申請はありません</p>';
       } else {
         admPendEl.innerHTML = pendings.map(r => {
           const u = state.listeners.find(l => l.id === r.listenerId);
-          return `<div class="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-xl border border-rose-200 bg-rose-50/40">
-            <div>
-              <span class="text-xs font-black text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md mr-2">${u ? u.name : '不明'}</span>
-              <span class="font-bold text-sm text-slate-900">${r.note}</span>
-              <div class="text-xs text-slate-500 mt-0.5">申請内容: <strong class="text-rose-600">${r.type === 'use' ? '-' : '+'}${r.amount} ${r.coin}</strong> (${r.createdAt})</div>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="processRequest('${r.id}', true)" class="crimson-gradient text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs">認可する</button>
-              <button onclick="processRequest('${r.id}', false)" class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-xl">却下</button>
-            </div>
-          </div>`;
+          return '<div class="history-item" style="background:#FFF1F2;border-color:#FECDD3;flex-wrap:wrap;gap:10px;">' +
+            '<div>' +
+              '<span class="pill pill-crimson" style="margin-right:6px;">' + (u ? u.name : '不明') + '</span>' +
+              '<strong style="font-size:14px;">' + r.note + '</strong>' +
+              '<div style="font-size:12px;color:#64748B;margin-top:4px;">申請内容: <strong style="color:#E11D48;">' + (r.type === 'use' ? '-' : '+') + r.amount + ' ' + r.coin + '</strong> (' + r.createdAt + ')</div>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button class="btn-tab-active" onclick="processRequest(\'' + r.id + '\', true)">認可する</button>' +
+              '<button class="btn-outline" onclick="processRequest(\'' + r.id + '\', false)">却下</button>' +
+            '</div>' +
+          '</div>';
         }).join('');
       }
 
-      // Admin Listeners Table
       const tableEl = document.getElementById('admin-listeners-table');
-      tableEl.innerHTML = state.listeners.map(l => `
-        <div class="py-2.5 flex items-center justify-between">
-          <span class="font-bold text-slate-800">${l.name}</span>
-          <div class="flex gap-4 text-xs font-bold">
-            <span class="text-rose-600">RC: ${l.rc.toLocaleString()}</span>
-            <span class="text-slate-900 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">PRC: ${l.prc.toLocaleString()}</span>
-          </div>
-        </div>
-      `).join('');
+      tableEl.innerHTML = state.listeners.map(l =>
+        '<div class="history-item">' +
+          '<strong style="font-size:14px;">' + l.name + '</strong>' +
+          '<div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;">' +
+            '<span style="color:#E11D48;">RC: ' + l.rc.toLocaleString() + '</span>' +
+            '<span style="background:#FFF1F2;border:1px solid #FECDD3;padding:2px 8px;border-radius:8px;">PRC: ' + l.prc.toLocaleString() + '</span>' +
+            '<button class="btn-outline" style="padding:3px 8px;font-size:11px;" onclick="deleteListener(\'' + l.id + '\')">削除</button>' +
+          '</div>' +
+        '</div>'
+      ).join('');
     }
 
+    // 初回描画＆4秒おきの自動クラウド同期
     renderAll();
+    if (getDbUrl()) {
+      syncFromCloud();
+    }
+    pollTimer = setInterval(() => {
+      if (getDbUrl()) syncFromCloud();
+    }, 4000);
   </script>
 </body>
 </html>
